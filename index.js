@@ -3,10 +3,19 @@ const formidable = require("express-formidable");
 const mongoose = require("mongoose");
 require("dotenv").config();
 const cloudinary = require("cloudinary").v2;
+const cors = require("cors");
+
 
 
 const app = express();
 app.use(formidable());
+
+app.use(
+  cors({
+    origin: "https://my--vinted-backend.herokuapp.com/",
+  })
+);
+
 
 mongoose.connect(process.env.MONGODB_URI);
 
