@@ -8,20 +8,17 @@ const isAuthenticated = require("../middlewares/isAuthenticated");
 
 const cloudinary = require("cloudinary").v2;
 
-
-
 router.post("/offer/publish", isAuthenticated, async (req, res) => {
   //vérifier si l'utilisateur est authentifié avant de poster l'annonce à l'aide du token
   try {
     const tokenSent = req.headers.authorization.replace("Bearer ", "");
     const user = await User.findOne({ token: tokenSent });
+    //destructuring
+    const { name, description, price, condition, city, brand, size, color } =
+      req.fields;
 
+    //image envoyée sur cloudinary
     const image = req.files.image.path;
-    const name = req.fields.name;
-    const description = req.fields.description;
-    const details = req.fields.details;
-    const price = req.fields.price;
-
     const imageCloud = await cloudinary.uploader.upload(image, {
       folder: `/vinted/offers/${user._id}`,
     });
@@ -32,7 +29,23 @@ router.post("/offer/publish", isAuthenticated, async (req, res) => {
       product_image: imageCloud.secure_url,
       product_description: description,
       product_price: price,
-      product_details: details,
+      product_details: [
+        {
+          MARQUE: brand,
+        },
+        {
+          TAILLE: size,
+        },
+        {
+          ÉTAT: condition,
+        },
+        {
+          COULEUR: color,
+        },
+        {
+          EMPLACEMENT: city,
+        },
+      ],
       owner: user,
     });
 
@@ -53,41 +66,82 @@ router.post("/offer/publish", isAuthenticated, async (req, res) => {
 router.get("/offers", async (req, res) => {
   try {
     //faire le destructuring
-    const { title, priceMin, priceMax, sort, page } = req.query;
+    const { title, priceMin, priceMax, sort} = req.query;
+
     if (sort === "price-desc") {
       sort === -1;
     }
     if (sort === "price-asc") {
       sort === 1;
     }
+
+    //filtre de recherche
     let research = {};
     if (title) {
       research.product_name = new RegExp(title, "i");
     }
     if (priceMax || priceMin) {
       research.product_price = {};
-      research.product_price.$gte = priceMin;
-      research.product_price.$lte = priceMax;
+      research.product_price.$gte = Number(priceMin);
+      research.product_price.$lte = Number(priceMax);
     }
-    const perPage = 2;
+  
+     let limit = Number(req.query.limit);
+     if (!limit) {
+       limit = 10;
+     }
+
+     let page;
+     if (!req.query.page || Number(req.query.page) < 1) {
+       page = 1;
+     } else {
+       page = Number(req.query.page);
+     }
+
+
     const offers = await Offer.find(research)
       .sort({ product_price: sort })
-      .limit(perPage)
-      .skip(perPage * (page - 1));
+      .limit(limit)
+      .skip((page - 1) * limit)
+      .populate({
+        path: "owner",
+        select: "account",
+      });
     res.json(offers);
   } catch (error) {
     res.status(401).json({ message: error.message });
   }
 });
 
-router.put("/offer/modify", isAuthenticated, async (req, res) => {
+router.put("/offer/modify/:id", isAuthenticated, async (req, res) => {
   try {
-    const offerSearched = await Offer.findById(req.query.id);
-    const newName = req.fields.product_name;
+    const offerSearched = await Offer.findById(req.params.id);
+
+    const { name, description, price, condition, city, brand, size, color } =
+      req.fields;
 
     if (offerSearched) {
-      offerSearched.product_name = newName;
-      await offerSearched.save();
+      offerSearched.product_name = name;
+      offerSearched.product_description = description;
+      offerSearched.product_price = price;
+      offerSearched.product_details= [
+        {
+          MARQUE: brand,
+        },
+        {
+          TAILLE: size,
+        },
+        {
+          ÉTAT: condition,
+        },
+        {
+          COULEUR: color,
+        },
+        {
+          EMPLACEMENT: city,
+        },
+      ],
+        await offerSearched.save();
       console.log("modification enregistrée");
       res.status(200).json({ message: "modification enregistrée" });
     }
@@ -96,10 +150,10 @@ router.put("/offer/modify", isAuthenticated, async (req, res) => {
   }
 });
 
-router.delete("/offer/delete", isAuthenticated, async (req, res) => {
+router.delete("/offer/delete/:id", isAuthenticated, async (req, res) => {
   try {
     //trouver l'offre à supprimer
-    const offerToDelete = Offer.findById(req.query.id);
+    const offerToDelete = Offer.findById(req.params.id);
     await Offer.remove(offerToDelete);
     res.status(200).json({ message: "offer deleted" });
   } catch (error) {
