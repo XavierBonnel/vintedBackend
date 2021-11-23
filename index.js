@@ -18,7 +18,7 @@ const limiter = rateLimit({
 const app = express();
 
 
-app.use(limiter());
+app.use(limiter);
 app.set("trust proxy", 1);//il semble qu'il faut l'intégrer pour l'utilisation avec Heroku
 app.use(helmet());
 app.use(formidable());
