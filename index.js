@@ -14,7 +14,7 @@ const limiter = rateLimit({
   max: 100, // limit each IP to 100 requests per windowMs
   message: "Sorry, it's too much for us ^^",
 });
-app.use(limiter);
+app.use(limiter());
 
 app.set("trust proxy", 1);
 
