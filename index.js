@@ -4,11 +4,22 @@ const mongoose = require("mongoose");
 require("dotenv").config();
 const cloudinary = require("cloudinary").v2;
 const cors = require("cors");
+const helmet = require("helmet");
+const rateLimit = require("express-rate-limit");
 
 
+const limiter = rateLimit({
+  windowMs: 15 * 60 * 1000, // 15 minutes
+  max: 100, // limit each IP to 100 requests per windowMs
+  message: "Sorry, it's too much for us ^^",
+});
+app.use(limiter);
 
 const app = express();
+app.use(helmet());
 app.use(formidable());
+
+
 
 app.use(
   cors({
