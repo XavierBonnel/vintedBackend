@@ -14,12 +14,12 @@ const limiter = rateLimit({
   max: 100, // limit each IP to 100 requests per windowMs
   message: "Sorry, it's too much for us ^^",
 });
-app.use(limiter());
-
-app.set("trust proxy", 1);
-
 
 const app = express();
+
+
+app.use(limiter());
+app.set("trust proxy", 1);//il semble qu'il faut l'intégrer pour l'utilisation avec Heroku
 app.use(helmet());
 app.use(formidable());
 
