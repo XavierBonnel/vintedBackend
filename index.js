@@ -7,7 +7,6 @@ const cors = require("cors");
 const helmet = require("helmet");
 const rateLimit = require("express-rate-limit");
 
-app.set("trust proxy", 1);
 
 
 const limiter = rateLimit({
@@ -16,6 +15,9 @@ const limiter = rateLimit({
   message: "Sorry, it's too much for us ^^",
 });
 app.use(limiter);
+
+app.set("trust proxy", 1);
+
 
 const app = express();
 app.use(helmet());
