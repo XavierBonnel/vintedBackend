@@ -26,9 +26,11 @@ app.use(formidable());
 
 
 app.use(
-  cors({
-    origin: "https://my--vinted-backend.herokuapp.com/",
-  })
+  cors(
+//     {
+//     origin: "https://my--vinted-backend.herokuapp.com/",
+//   }
+  )
 );
 
 
