@@ -14,7 +14,7 @@ const cloudinary = require("cloudinary").v2;
 
 router.post("/user/signup", async (req, res) => {
   try {
-    const avatar = req.files.avatar.path;
+    const avatar = req.files.avatar?.path;
     const email = req.fields.email;
     const username = req.fields.username;
     const phone = req.fields.phone;
