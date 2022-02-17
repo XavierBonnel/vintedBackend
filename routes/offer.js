@@ -66,7 +66,7 @@ router.post("/offer/publish", isAuthenticated, async (req, res) => {
 router.get("/offers", async (req, res) => {
   try {
     //faire le destructuring
-    const { title, priceMin, priceMax, sort} = req.query;
+    const { title, priceMin, priceMax, sort } = req.query;
 
     if (sort === "price-desc") {
       sort === -1;
@@ -85,19 +85,18 @@ router.get("/offers", async (req, res) => {
       research.product_price.$gte = Number(priceMin);
       research.product_price.$lte = Number(priceMax);
     }
-  
-     let limit = Number(req.query.limit);
-     if (!limit) {
-       limit = 10;
-     }
 
-     let page;
-     if (!req.query.page || Number(req.query.page) < 1) {
-       page = 1;
-     } else {
-       page = Number(req.query.page);
-     }
+    let limit = Number(req.query.limit);
+    if (!limit) {
+      limit = 100;
+    }
 
+    let page;
+    if (!req.query.page || Number(req.query.page) < 1) {
+      page = 1;
+    } else {
+      page = Number(req.query.page);
+    }
 
     const offers = await Offer.find(research)
       .sort({ product_price: sort })
@@ -124,7 +123,7 @@ router.put("/offer/modify/:id", isAuthenticated, async (req, res) => {
       offerSearched.product_name = name;
       offerSearched.product_description = description;
       offerSearched.product_price = price;
-      offerSearched.product_details= [
+      (offerSearched.product_details = [
         {
           MARQUE: brand,
         },
@@ -140,7 +139,7 @@ router.put("/offer/modify/:id", isAuthenticated, async (req, res) => {
         {
           EMPLACEMENT: city,
         },
-      ],
+      ]),
         await offerSearched.save();
       console.log("modification enregistrée");
       res.status(200).json({ message: "modification enregistrée" });
