@@ -66,13 +66,14 @@ router.post("/offer/publish", isAuthenticated, async (req, res) => {
 router.get("/offers", async (req, res) => {
   try {
     //faire le destructuring
-    const { title, priceMin, priceMax, sort } = req.query;
+
+    let { title, priceMin, priceMax, sort } = req.query;
 
     if (sort === "price-desc") {
-      sort === -1;
+      sort = -1;
     }
     if (sort === "price-asc") {
-      sort === 1;
+      sort = 1;
     }
 
     //filtre de recherche
