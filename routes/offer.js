@@ -6,7 +6,7 @@ const Offer = require("../models/Offer");
 
 const isAuthenticated = require("../middlewares/isAuthenticated");
 
-const cloudinary = require("cloudinary").v2;
+const cloudinary = require("cloudinary");
 
 router.post("/offer/publish", isAuthenticated, async (req, res) => {
   //vérifier si l'utilisateur est authentifié avant de poster l'annonce à l'aide du token

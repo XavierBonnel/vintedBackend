@@ -2,7 +2,7 @@ const express = require("express");
 const formidable = require("express-formidable");
 const mongoose = require("mongoose");
 require("dotenv").config();
-const cloudinary = require("cloudinary").v2;
+const cloudinary = require("cloudinary");
 const cors = require("cors");
 const helmet = require("helmet");
 
