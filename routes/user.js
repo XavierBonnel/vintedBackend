@@ -8,7 +8,7 @@ const User = require("../models/User");
 
 // const { findOne } = require("../models/User");
 
-const cloudinary = require("cloudinary").v2;
+const cloudinary = require("cloudinary");
 
 //user/signup deactivated to avoid spam
 
